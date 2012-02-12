@@ -139,7 +139,11 @@ namespace SevenZip
 
         public override void Close()
         {
-            _baseStream.Close();
+            this.Flush();
+            if (_streamOwner)
+            {
+                _baseStream.Close();
+            }
             base.Close();
         }
     }
@@ -243,7 +247,10 @@ namespace SevenZip
         public override void Close()
         {
             this.Flush();
-            _baseStream.Close();
+            if (_streamOwner)
+            {
+                _baseStream.Close();
+            }
             base.Close();
         }
     }
