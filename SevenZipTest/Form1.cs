@@ -10,7 +10,7 @@ using SevenZip;
 using System.IO;
 using System.Diagnostics;
 
-namespace sevemziptest
+namespace SevenZipTest
 {
     public partial class Form1 : Form
     {
@@ -21,11 +21,9 @@ namespace sevemziptest
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            LZMAEncoderStream outStream = new LZMAEncoderStream(File.Create("allme.lz"));
+            LZMAEncoderStream outStream = new LZMAEncoderStream(File.Create("SevenZipSharp.dll.lz"));
 
-            FileStream input = File.Open("all.7z", FileMode.Open);
+            FileStream input = File.Open("SevenZipSharp.dll", FileMode.Open, FileAccess.Read, FileShare.Read);
             
             byte[] inputBuf = new byte[1000];
             int readAmt;
@@ -45,12 +43,9 @@ namespace sevemziptest
             outStream.Flush();
             outStream.Close();
             input.Close();
-            sw.Stop();
-
-            Debug.Print(string.Format("Time: {0}", sw.ElapsedMilliseconds));
 
 
-            LZMADecoderStream inStream = new LZMADecoderStream(File.Open("allme.lz", FileMode.Open));
+            LZMADecoderStream inStream = new LZMADecoderStream(File.Open("SevenZipSharp.dll.lz", FileMode.Open));
 
             len = new byte[8];
             Int64 fileLen = 0;
@@ -62,16 +57,11 @@ namespace sevemziptest
             
             byte[] wholeBuf = new byte[fileLen];
 
-            sw.Restart();
             inStream.Read(wholeBuf, 0, (int)fileLen);
-            sw.Stop();
 
-            File.WriteAllBytes("all2.7z", wholeBuf);
+            File.WriteAllBytes("SevenZipSharp.test.dll", wholeBuf);
 
             inStream.Close();
-
-
-            Debug.Print(string.Format("Time: {0}", sw.ElapsedMilliseconds));
 
         }
     }

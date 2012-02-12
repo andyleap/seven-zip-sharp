@@ -1,4 +1,4 @@
-﻿namespace sevemziptest
+﻿namespace SevenZipTest
 {
     partial class Form1
     {

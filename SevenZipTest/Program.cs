@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 
-namespace sevemziptest
+namespace SevenZipTest
 {
     static class Program
     {

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sevenziptest", "7ziptest\sevenziptest.csproj", "{02ECDF81-1088-4C7A-8559-77D19AFBE5EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZipTest", "SevenZipTest\SevenZipTest.csproj", "{02ECDF81-1088-4C7A-8559-77D19AFBE5EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZip", "sevenzip\SevenZip.csproj", "{46CE80F7-84D6-4634-B78D-8DD46250065F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZipSharp", "SevenZipSharp\SevenZipSharp.csproj", "{46CE80F7-84D6-4634-B78D-8DD46250065F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularBuffer", "CircularBuffer\CircularBuffer\CircularBuffer.csproj", "{21E08E11-09AB-4B87-92A4-4991D99C4988}"
 EndProject
