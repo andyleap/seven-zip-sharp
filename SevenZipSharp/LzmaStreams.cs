@@ -6,7 +6,7 @@ using System.IO;
 using SevenZip;
 using SevenZip.Compression.LZMA;
 
-namespace SevenZip
+namespace SevenZipSharp
 {
     public class LZMAEncoderStream : Stream
     {
@@ -32,7 +32,11 @@ namespace SevenZip
         {
         }
 
-        public LZMAEncoderStream(Stream baseStream) : this(baseStream, true, 1<<15)
+        public LZMAEncoderStream(Stream baseStream) : this(baseStream, true)
+        {
+        }
+
+        public LZMAEncoderStream(Stream baseStream, bool streamOwner) : this(baseStream, streamOwner, 1<<15)
         {
         }
 
@@ -44,8 +48,19 @@ namespace SevenZip
             WriteLzmaProperties(encoder);
             _streamOwner = streamOwner;
             tmpBuffer = new CircularStream(buffersize);
-            encoder.WriteCoderProperties(_baseStream);
             encoder.Start(tmpBuffer, baseStream);
+        }
+
+        public byte[] GetProperties()
+        {
+            MemoryStream tmpBuffer = new MemoryStream();
+            encoder.WriteCoderProperties(tmpBuffer);
+            return tmpBuffer.ToArray();
+        }
+
+        public void WriteProperties()
+        {
+            encoder.WriteCoderProperties(_baseStream);
         }
 
         internal void WriteLzmaProperties(LzmaCycleEncoder encoder)
@@ -157,7 +172,12 @@ namespace SevenZip
         Int64 readPos;
 
         public LZMADecoderStream(Stream baseStream)
-            : this(baseStream, true, 1<<15)
+            : this(baseStream, true)
+        {
+        }
+
+        public LZMADecoderStream(Stream baseStream, bool streamOwner)
+            : this(baseStream, streamOwner, 1 << 15)
         {
         }
 
@@ -166,17 +186,21 @@ namespace SevenZip
             _baseStream = baseStream;
             tmpBuffer = new CircularStream(buffersize);
             decoder = new LzmaCycleDecoder();
-            decoder.SetDecoderProperties(GetLzmaProperties(baseStream));
             decoder.Start(baseStream, tmpBuffer);
             readPos = 0;
             _streamOwner = streamOwner;
         }
 
-        internal byte[] GetLzmaProperties(Stream inStream)
+        public byte[] GetLzmaProperties()
         {
             byte[] LZMAProps = new byte[5];
-            inStream.Read(LZMAProps, 0, 5);
+            _baseStream.Read(LZMAProps, 0, 5);
             return LZMAProps;
+        }
+
+        public void SetProperties(byte[] props)
+        {
+            decoder.SetDecoderProperties(props);
         }
 
         public override void Write(byte[] buffer, int offset, int count)

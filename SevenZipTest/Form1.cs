@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using SevenZip;
+using SevenZipSharp;
 using System.IO;
 using System.Diagnostics;
 
@@ -21,47 +21,30 @@ namespace SevenZipTest
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            LZMAEncoderStream outStream = new LZMAEncoderStream(File.Create("SevenZipSharp.dll.lz"));
+            MemoryStream file1packedStream = new MemoryStream();
+            LZMAEncoderStream file1outStream = new LZMAEncoderStream(file1packedStream, false);
 
-            FileStream input = File.Open("SevenZipSharp.dll", FileMode.Open, FileAccess.Read, FileShare.Read);
-            
-            byte[] inputBuf = new byte[1000];
-            int readAmt;
+            FileStream file1 = File.Open("SevenZipSharp.dll", FileMode.Open, FileAccess.Read, FileShare.Read);
+            file1.CopyTo(file1outStream, 4096);
+            file1outStream.Close();
 
-            byte[] len = new byte[8];
+            file1packedStream.Seek(0, SeekOrigin.Begin);
 
-            for (int i = 0; i < 8; i++)
-                len[i] = (byte) (input.Length >> (8*i));
+            MemoryStream file2packedStream = new MemoryStream();
+            LZMAEncoderStream file2outStream = new LZMAEncoderStream(file2packedStream, false);
 
-            outStream.WritePlain(len, 0, 8);
+            FileStream file2 = File.Open("SevenZipTest.exe", FileMode.Open, FileAccess.Read, FileShare.Read);
+            file2.CopyTo(file2outStream, 4096);
+            file2outStream.Close();
 
-            while ((readAmt = input.Read(inputBuf, 0, 1000)) != 0)
-            {
-                outStream.Write(inputBuf, 0, readAmt);
-            }
+            file2packedStream.Seek(0, SeekOrigin.Begin);
 
-            outStream.Flush();
-            outStream.Close();
-            input.Close();
+            SevenZipArchive archive = new SevenZipArchive();
 
+            archive.AddFile(new SevenZipFile(SevenZipFile.LZMACodec, file1outStream.GetProperties(), (UInt64)file1.Length, (UInt64)file1packedStream.Length, "SevenZipSharp.dll", file1packedStream));
+            archive.AddFile(new SevenZipFile(SevenZipFile.LZMACodec, file2outStream.GetProperties(), (UInt64)file2.Length, (UInt64)file2packedStream.Length, "SevenZipTest.exe", file2packedStream));
 
-            LZMADecoderStream inStream = new LZMADecoderStream(File.Open("SevenZipSharp.dll.lz", FileMode.Open));
-
-            len = new byte[8];
-            Int64 fileLen = 0;
-
-            inStream.ReadPlain(len, 0, 8);
-
-            for (int i = 0; i < 8; i++)
-                fileLen |= (((long)(byte)len[i] << (8 * i)));
-            
-            byte[] wholeBuf = new byte[fileLen];
-
-            inStream.Read(wholeBuf, 0, (int)fileLen);
-
-            File.WriteAllBytes("SevenZipSharp.test.dll", wholeBuf);
-
-            inStream.Close();
+            archive.CreateFile(File.Create("SevenZipSharp.7z"));
 
         }
     }
