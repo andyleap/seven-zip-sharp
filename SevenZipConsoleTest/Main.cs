@@ -11,7 +11,7 @@ namespace SevenZipConsoleTest
 			SevenZipArchive test = new SevenZipArchive();
 			test.AddFile(new SevenZipFile("SevenZipSharp.dll"));
 			test.AddFile(new SevenZipFile("CircularBuffer.dll"));
-			test.CreateFile(File.Create("SevenZipSharp.dll"));
+			test.CreateFile(File.Create("SevenZipSharp.7z"));
 		}
 	}
 }

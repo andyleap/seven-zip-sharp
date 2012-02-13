@@ -7,5 +7,11 @@ namespace SevenZipSharp
 {
     class SevenZipHeader
     {
+    	
+    	public SevenZipHeader(SevenZipArchive archive)
+    	{
+    		
+    		
+    	}
     }
 }

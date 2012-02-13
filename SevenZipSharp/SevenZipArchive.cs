@@ -164,6 +164,7 @@ namespace SevenZipSharp
             output.Write(startHeader, 0, 20);
             foreach(SevenZipFile file in files)
             {
+            	file.source.Seek(0, SeekOrigin.Begin);
                 file.source.CopyTo(output);
             }
             output.Write(header, 0, header.Length);
