@@ -30,6 +30,24 @@ namespace SevenZipSharp
             MTime = DateTime.Now;
             attr = (uint)FileAttributes.Normal;
         }
+		
+		public SevenZipFile(string file)
+		{
+			this.codec = LZMACodec;
+			source = new MemoryStream();
+			this.name = file;
+			MTime = DateTime.Now;
+			attr = (uint)FileAttributes.Normal;
+			
+			LZMAEncoderStream compSource = new LZMAEncoderStream(source, false);
+			FileStream sourceFile = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+			codecAttr = compSource.GetProperties();
+			sourceFile.CopyTo(compSource);
+			compSource.Close();
+			UnpackedSize = (UInt64)sourceFile.Length;
+			PackedSize = (UInt64)source.Length;
+			
+		}
 
     }
 }

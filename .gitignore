@@ -2,3 +2,5 @@
 *.user
 obj/
 bin/
+*.userprefs
+*.pidb

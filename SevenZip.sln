@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZipTest", "SevenZipTest\SevenZipTest.csproj", "{02ECDF81-1088-4C7A-8559-77D19AFBE5EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZipSharp", "SevenZipSharp\SevenZipSharp.csproj", "{46CE80F7-84D6-4634-B78D-8DD46250065F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularBuffer", "CircularBuffer\CircularBuffer\CircularBuffer.csproj", "{21E08E11-09AB-4B87-92A4-4991D99C4988}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenZipConsoleTest", "SevenZipConsoleTest\SevenZipConsoleTest.csproj", "{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +29,6 @@ Global
 		{02ECDF81-1088-4C7A-8559-77D19AFBE5EB}.Release|Mixed Platforms.Build.0 = Release|x86
 		{02ECDF81-1088-4C7A-8559-77D19AFBE5EB}.Release|x86.ActiveCfg = Release|x86
 		{02ECDF81-1088-4C7A-8559-77D19AFBE5EB}.Release|x86.Build.0 = Release|x86
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|x86.ActiveCfg = Release|Any CPU
 		{21E08E11-09AB-4B87-92A4-4991D99C4988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{21E08E11-09AB-4B87-92A4-4991D99C4988}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21E08E11-09AB-4B87-92A4-4991D99C4988}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -47,6 +39,31 @@ Global
 		{21E08E11-09AB-4B87-92A4-4991D99C4988}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{21E08E11-09AB-4B87-92A4-4991D99C4988}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{21E08E11-09AB-4B87-92A4-4991D99C4988}.Release|x86.ActiveCfg = Release|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{46CE80F7-84D6-4634-B78D-8DD46250065F}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Debug|x86.Build.0 = Debug|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE022DE3-D8AC-4372-8E57-2FA80C7FA386}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = SevenZipConsoleTest\SevenZipConsoleTest.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
