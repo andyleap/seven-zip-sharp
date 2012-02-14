@@ -8,21 +8,236 @@ namespace SevenZipSharp
 {
     public class SevenZipArchive
     {
-    	class SevenZipHeader
+    	private class SevenZipHeader
 	    {
+	    	private SevenZipArchive archive;
 	    	
-	    	public SevenZipHeader(SevenZipArchive archive)
+	    	private class PropertyIDs
 	    	{
 	    		
+	    		public static byte kEnd = 0x00;
+	    		
+	    		public static byte kHeader = 0x01;
+	    		
+	    		public static byte kArchiveProperties = 0x02;
+	    		
+	    		public static byte kAdditionalStreamsInfo = 0x03;
+	    		public static byte kMainStreamsInfo = 0x04;
+	    		public static byte kFilesInfo = 0x05;
+	    	
+	    		public static byte kPackInfo = 0x06;
+	    		public static byte kUnPackInfo = 0x07;
+	    		public static byte kSubstreamsInfo = 0x08;
+	    		
+	    		public static byte kSize = 0x09;
+	    		public static byte kCRC = 0x0A;
+	    		
+	    		public static byte kFolder = 0x0B;
+	    		
+	    		public static byte kCodersUnPackSize = 0x0C;
+	    		public static byte kNumUnPackStream = 0x0D;
+	    		
+	    		public static byte kEmptyStream = 0x0E;
+	    		public static byte kEmptyFile = 0x0F;
+	    		public static byte kAnti = 0x10;
+	    	
+	    		public static byte kName = 0x11;
+	    		public static byte kCTime = 0x12;
+	    		public static byte kATime = 0x13;
+	    		public static byte kMTime = 0x14;
+	    		public static byte kWinAttributes = 0x15;
+	    		public static byte kComment = 0x16;
+	    		
+	    		public static byte kEncodedHeader = 0x17;
+	    		
+	    		public static byte kStartPos = 0x18;
+	    		public static byte kDummy = 0x19;
 	    		
 	    	}
+    		
+	    	public SevenZipHeader(SevenZipArchive archive)
+	    	{
+	    		this.archive = archive;
+	    	}
+	    	
+	    	public void WriteUInt64(Stream outStream, UInt64 value)
+	        {
+	            byte first = 0;
+	            byte mask = 0x80;
+	            int i;
+	            for (i = 0; i < 8; i++)
+	            {
+	                if (value < (((UInt64)1 << (7 * (i + 1)))))
+	                {
+	                    first |= (byte)(value >> (8 * i));
+	                    break;
+	                }
+	                first |= mask;
+	                mask >>= 1;
+	            }
+	            outStream.WriteByte(first);
+	            for (; i > 0; i--)
+	            {
+	                outStream.WriteByte((byte)value);
+	                value >>= 8;
+	            }
+	        }
+	    	
+	    	public byte[] BuildHeader()
+	    	{
+	    		using(MemoryStream header = new MemoryStream())
+	    		{
+	    			Header(header);
+	    			return header.ToArray();
+	    		}
+	    	}
+	    	
+	    	public void ArchiveProperties(MemoryStream header)
+	    	{
+	    		if(archive.ArchiveProperties.Count > 0)
+	    		{
+	    			header.WriteByte(PropertyIDs.kArchiveProperties);
+	    			foreach(KeyValuePair<byte, byte[]> property in archive.ArchiveProperties)
+	    			{
+	    				header.WriteByte(property.Key);
+	    				WriteUInt64(header, (UInt64)property.Value.LongLength);
+	    				header.Write(property.Value, 0, property.Value.Length);
+	    			}
+	    			header.WriteByte(PropertyIDs.kEnd);
+	    		}
+	    	}
+	    	
+	    	public void Digests(MemoryStream header, List<byte[]> digests)
+	    	{
+	    		header.WriteByte(0x01);
+	    		foreach(byte[] crc in digests)
+	    		{
+	    			header.Write(crc, 0, 4);
+	    		}
+	    	}
+	    	
+	    	public void PackInfo(MemoryStream header)
+	    	{
+	    		header.WriteByte(PropertyIDs.kPackInfo);
+	    		WriteUInt64(header, 0);
+	    		WriteUInt64(header, (UInt64)archive.files.LongCount());
+	    		
+	    		header.WriteByte(PropertyIDs.kSize);
+	    		
+	    		foreach(SevenZipFile file in archive.files)
+	    		{
+	    			WriteUInt64(header, file.PackedSize);
+	    		}
+	    		
+	    		header.WriteByte(PropertyIDs.kEnd);
+	    	}
+	    	
+	    	public void Folder(MemoryStream header, SevenZipFile file)
+	    	{
+	    		WriteUInt64(header, 1);
+    			byte codecInfo = 0;
+    			codecInfo |= (byte)file.codec.Length;
+    			if(file.codecAttr!=null)
+    				codecInfo |= 0x20;
+    			header.WriteByte(codecInfo);
+    			header.Write(file.codec, 0, file.codec.Length);
+    			if(file.codecAttr!=null)
+    			{
+    				WriteUInt64(header, (UInt64)file.codecAttr.LongLength);
+    				header.Write(file.codecAttr, 0, file.codecAttr.Length);
+    			}
+	    	}
+	    	
+	    	public void CodersInfo(MemoryStream header)
+	    	{
+	    		header.WriteByte(PropertyIDs.kUnPackInfo);
+	    		header.WriteByte(PropertyIDs.kFolder);
+	    		
+	    		WriteUInt64(header, (UInt64)archive.files.LongCount());
+	    		header.WriteByte(0x00);
+	    		
+	    		foreach(SevenZipFile file in archive.files)
+	    		{
+	    			Folder(header, file);
+	    		}
+	    		
+	    		header.WriteByte(PropertyIDs.kCodersUnPackSize);
+	    		
+	    		foreach(SevenZipFile file in archive.files)
+	    		{
+	    			WriteUInt64(header, file.UnpackedSize);
+	    		}
+	    		
+	    		header.WriteByte(PropertyIDs.kEnd);
+	    	}
+	    	
+	    	public void SubStreamsInfo(MemoryStream header)
+	    	{
+	    		header.WriteByte(PropertyIDs.kSubstreamsInfo);
+	    		header.WriteByte(PropertyIDs.kCRC);
+	    		List<byte[]> digests = new List<byte[]>();
+	    		foreach(SevenZipFile file in archive.files)
+	    		{
+	    			digests.Add(file.PackedCRC);
+	    		}
+	    		Digests(header, digests);
+	    		header.WriteByte(PropertyIDs.kEnd);
+	    	}
+	    	
+	    	public void StreamsInfo(MemoryStream header)
+	    	{
+	    		PackInfo(header);
+	    		CodersInfo(header);
+	    		SubStreamsInfo(header);
+	    		
+	    		header.WriteByte(PropertyIDs.kEnd);
+	    	}
+	    	
+	    	public void FilesInfo(MemoryStream header)
+	    	{
+	    		header.WriteByte(PropertyIDs.kFilesInfo);
+	    		WriteUInt64(header, (UInt64)archive.files.LongCount());
+	    		
+	    		header.WriteByte(PropertyIDs.kName);
+	    		UInt64 totalnamelen = 0;
+	            foreach (SevenZipFile file in archive.files)
+	            {
+	                totalnamelen += (UInt64) file.name.Length + 1;
+	            }
+	            WriteUInt64(header, (totalnamelen * 2) + 1);
+	    		header.WriteByte(0x00);
+	            foreach (SevenZipFile file in archive.files)
+	            {
+	                byte[] namechar = Encoding.Unicode.GetBytes(file.name);
+	                header.Write(namechar, 0, namechar.Length);
+	                header.WriteByte(0x00);
+	                header.WriteByte(0x00);
+	            }
+	    		
+	            header.WriteByte(PropertyIDs.kEnd);
+	    	}
+	    	
+	    	public void Header(MemoryStream header)
+	    	{
+	    		header.WriteByte(PropertyIDs.kHeader);
+	    		ArchiveProperties(header);
+	    		
+	    		header.WriteByte(PropertyIDs.kMainStreamsInfo);
+	    		StreamsInfo(header);
+	    		
+	    		FilesInfo(header);
+	    		
+	    		header.WriteByte(PropertyIDs.kEnd);
+	    	}
+	    	
 	    }
     	
         List<SevenZipFile> files = new List<SevenZipFile>();
+        public Dictionary<byte, byte[]> ArchiveProperties;
 
         public SevenZipArchive()
         {
-
+			ArchiveProperties = new Dictionary<byte, byte[]>();
 
         }
 
@@ -54,94 +269,6 @@ namespace SevenZipSharp
             }
         }
 
-        public byte[] BuildHeader()
-        {
-            MemoryStream header = new MemoryStream();
-            header.WriteByte(0x01);
-            header.WriteByte(0x04);
-            header.WriteByte(0x06);
-            WriteUInt64(header, 0);
-            WriteUInt64(header, (UInt64)files.Count);
-            header.WriteByte(0x09);
-            foreach (SevenZipFile file in files)
-            {
-                WriteUInt64(header, file.PackedSize);
-            }
-            header.WriteByte(0x00);
-            header.WriteByte(0x07);
-            header.WriteByte(0x0B);
-            WriteUInt64(header, (UInt64)files.Count);
-            header.WriteByte(0x00);
-            foreach (SevenZipFile file in files)
-            {
-                header.WriteByte(0x01);
-                header.WriteByte(0x23);
-                header.Write(file.codec, 0, 3);
-                WriteUInt64(header, 5);
-                header.Write(file.codecAttr, 0, 5);
-            }
-            header.WriteByte(0x0C);
-            foreach (SevenZipFile file in files)
-            {
-                WriteUInt64(header, file.UnpackedSize);
-            }
-            header.WriteByte(0x00);
-
-            header.WriteByte(0x08);
-            header.WriteByte(0x0A);
-            header.WriteByte(0x01);
-            foreach (SevenZipFile file in files)
-            {
-                header.Write(CRC32.Calculate(file.source.ToArray()).Reverse().ToArray(), 0, 4);
-            }
-            header.WriteByte(0x00);
-
-            header.WriteByte(0x00);
-
-            header.WriteByte(0x05);
-            WriteUInt64(header, (UInt64)files.Count);
-            header.WriteByte(0x11);
-            UInt64 totalnamelen = 0;
-            foreach (SevenZipFile file in files)
-            {
-                totalnamelen += (UInt64) file.name.Length + 1;
-            }
-            WriteUInt64(header, (totalnamelen * 2) + 1);
-            header.WriteByte(0x00);
-            foreach (SevenZipFile file in files)
-            {
-                byte[] namechar = Encoding.Unicode.GetBytes(file.name);
-                header.Write(namechar, 0, namechar.Length);
-                header.WriteByte(0x00);
-                header.WriteByte(0x00);
-            }
-
-            header.WriteByte(0x14);
-
-            WriteUInt64(header, (UInt64)(files.Count * 8 + 2));
-            header.WriteByte(0x01);
-            header.WriteByte(0x00);
-            foreach (SevenZipFile file in files)
-            {
-                header.Write(BitConverter.GetBytes(file.MTime.ToFileTime()), 0, 8);
-            }
-
-            header.WriteByte(0x15);
-
-            WriteUInt64(header, (UInt64)(files.Count * 4 + 2));
-            header.WriteByte(0x01);
-            header.WriteByte(0x00);
-            foreach (SevenZipFile file in files)
-            {
-                header.Write(BitConverter.GetBytes(file.attr), 0, 4);
-            }
-
-            header.WriteByte(0x00);
-            header.WriteByte(0x00);
-
-            return header.ToArray();
-        }
-
         public void CreateFile(Stream output)
         {
             CreateFile(output, true);
@@ -149,7 +276,8 @@ namespace SevenZipSharp
 
         public void CreateFile(Stream output, bool close)
         {
-            byte[] header = BuildHeader();
+        	SevenZipHeader Header = new SevenZipHeader(this);
+            byte[] header = Header.BuildHeader();
             UInt64 streamlen = 0;
             foreach (SevenZipFile file in files)
             {

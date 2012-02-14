@@ -16,6 +16,7 @@ namespace SevenZipSharp
         public MemoryStream source;
         public DateTime MTime;
         public UInt32 attr;
+        public byte[] PackedCRC;
 
         public static byte[] LZMACodec = { 0x03, 0x01, 0x01 };
 
@@ -46,7 +47,7 @@ namespace SevenZipSharp
 			compSource.Close();
 			UnpackedSize = (UInt64)sourceFile.Length;
 			PackedSize = (UInt64)source.Length;
-			
+			PackedCRC = CRC32.Calculate(source.ToArray()).Reverse().ToArray();
 		}
 
     }
