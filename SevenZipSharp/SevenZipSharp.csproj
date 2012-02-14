@@ -61,7 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SevenZipArchive.cs" />
     <Compile Include="SevenZipFile.cs" />
-    <Compile Include="SevenZipHeader.cs" />
     <Compile Include="SevenZipSignature.cs" />
   </ItemGroup>
   <ItemGroup>

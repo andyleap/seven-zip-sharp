@@ -8,6 +8,16 @@ namespace SevenZipSharp
 {
     public class SevenZipArchive
     {
+    	class SevenZipHeader
+	    {
+	    	
+	    	public SevenZipHeader(SevenZipArchive archive)
+	    	{
+	    		
+	    		
+	    	}
+	    }
+    	
         List<SevenZipFile> files = new List<SevenZipFile>();
 
         public SevenZipArchive()
